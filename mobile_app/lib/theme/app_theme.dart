@@ -24,7 +24,7 @@ class AppTheme {
         foregroundColor: textPrimary,
         elevation: 0,
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         color: bgCard,
         shape: RoundedRectangleBorder(
           side: const BorderSide(color: border),

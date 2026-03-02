@@ -448,6 +448,7 @@ def run_web():
         }
 
     @app.post("/api/predict", response_model=FullPredictionResponse)
+    @app.post("/api/scan", response_model=FullPredictionResponse)
     async def predict(
         file: UploadFile = File(...),
         servings: int = 2,
@@ -597,6 +598,7 @@ def run_web():
     # ============================================
 
     @app.get("/api/user/profile", response_model=UserProfile)
+    @app.get("/api/profile", response_model=UserProfile)
     async def get_user_profile(current_user = Depends(get_current_user)):
         """Obtenir le profil de l'utilisateur connecté"""
         try:
@@ -649,6 +651,7 @@ def run_web():
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.get("/api/user/history", response_model=List[ScanHistoryItem])
+    @app.get("/api/history", response_model=List[ScanHistoryItem])
     async def get_user_history(
         limit: int = 50,
         current_user = Depends(get_current_user)
@@ -679,6 +682,7 @@ def run_web():
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.delete("/api/user/history/{scan_id}")
+    @app.delete("/api/history/{scan_id}")
     async def delete_scan_from_history(
         scan_id: str,
         current_user = Depends(get_current_user)
@@ -696,6 +700,7 @@ def run_web():
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.get("/api/user/favorites", response_model=List[FavoriteItem])
+    @app.get("/api/favorites", response_model=List[FavoriteItem])
     async def get_user_favorites(
         limit: int = 100,
         current_user = Depends(get_current_user)
@@ -730,6 +735,7 @@ def run_web():
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.post("/api/user/favorites")
+    @app.post("/api/favorites")
     async def add_user_favorite(
         payload: dict = Body(...),
         current_user = Depends(get_current_user)
@@ -753,6 +759,7 @@ def run_web():
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.delete("/api/user/favorites/{favorite_id}")
+    @app.delete("/api/favorites/{favorite_id}")
     async def delete_user_favorite(
         favorite_id: str,
         current_user = Depends(get_current_user)

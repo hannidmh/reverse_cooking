@@ -40,7 +40,7 @@ class FoodAiMobileApp extends ConsumerWidget {
       home: authSession.when(
         data: (session) => MainTabs(isLoggedIn: session != null),
         loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-        error: (_, _) => const MainTabs(isLoggedIn: false),
+        error: (error, stackTrace) => const MainTabs(isLoggedIn: false),
       ),
     );
   }

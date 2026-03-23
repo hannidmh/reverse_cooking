@@ -31,6 +31,8 @@ class _ScanScreenState extends State<ScanScreen> {
   ScanResponse? _result;
   bool _loading = false;
   String? _errorMessage;
+  int _servings = 2;
+  double _minConfidence = 0.7;
 
   Future<void> _pick(ImageSource source) async {
     final file = await _picker.pickImage(source: source, imageQuality: 85);
@@ -46,7 +48,11 @@ class _ScanScreenState extends State<ScanScreen> {
     if (_image == null) return;
     setState(() => _loading = true);
     try {
-      final data = await widget.api.scanImage(_image!);
+      final data = await widget.api.scanImage(
+        _image!,
+        servings: _servings,
+        minConfidence: _minConfidence,
+      );
       setState(() {
         _result = data;
         _errorMessage = null;
@@ -100,6 +106,25 @@ class _ScanScreenState extends State<ScanScreen> {
                   child: Image.file(_image!, height: 200, width: double.infinity, fit: BoxFit.cover),
                 ),
               const SizedBox(height: 10),
+              Text('Portions: $_servings'),
+              Slider(
+                value: _servings.toDouble(),
+                min: 1,
+                max: 8,
+                divisions: 7,
+                label: '$_servings',
+                onChanged: (value) => setState(() => _servings = value.round()),
+              ),
+              Text('Seuil de confiance: ${_minConfidence.toStringAsFixed(2)}'),
+              Slider(
+                value: _minConfidence,
+                min: 0.1,
+                max: 0.95,
+                divisions: 17,
+                label: _minConfidence.toStringAsFixed(2),
+                onChanged: (value) => setState(() => _minConfidence = value),
+              ),
+              const SizedBox(height: 4),
               Row(
                 children: [
                   Expanded(

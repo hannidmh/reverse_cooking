@@ -6,14 +6,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/config.dart';
 
 class AuthService {
+<<<<<<< HEAD
   AuthService._(this._client);
 
   final SupabaseClient? _client;
+=======
+  AuthService._(this._client, this._redirectUrl);
+
+  final SupabaseClient? _client;
+  final String _redirectUrl;
+>>>>>>> origin/codex/run-app-on-created-device-pqcgc5
 
   static Future<AuthService> create() async {
     final config = await _loadConfig();
     if (config == null) {
+<<<<<<< HEAD
       return AuthService._(null);
+=======
+      return AuthService._(null, AppConfig.authRedirectUrl);
+>>>>>>> origin/codex/run-app-on-created-device-pqcgc5
     }
 
     await Supabase.initialize(
@@ -21,12 +32,21 @@ class AuthService {
       anonKey: config.$2,
     );
 
+<<<<<<< HEAD
     return AuthService._(Supabase.instance.client);
   }
 
   static Future<(String, String)?> _loadConfig() async {
     if (AppConfig.hasSupabaseConfig) {
       return (AppConfig.supabaseUrl, AppConfig.supabaseAnonKey);
+=======
+    return AuthService._(Supabase.instance.client, config.$3);
+  }
+
+  static Future<(String, String, String)?> _loadConfig() async {
+    if (AppConfig.hasSupabaseConfig) {
+      return (AppConfig.supabaseUrl, AppConfig.supabaseAnonKey, AppConfig.authRedirectUrl);
+>>>>>>> origin/codex/run-app-on-created-device-pqcgc5
     }
 
     try {
@@ -35,9 +55,16 @@ class AuthService {
       final data = res.data as Map<String, dynamic>;
       final url = (data['supabase_url'] as String?) ?? '';
       final anonKey = (data['supabase_anon_key'] as String?) ?? '';
+<<<<<<< HEAD
       final authEnabled = data['auth_enabled'] == true;
       if (!authEnabled || url.isEmpty || anonKey.isEmpty) return null;
       return (url, anonKey);
+=======
+      final redirectUrl = (data['redirect_url'] as String?) ?? AppConfig.authRedirectUrl;
+      final authEnabled = data['auth_enabled'] == true;
+      if (!authEnabled || url.isEmpty || anonKey.isEmpty) return null;
+      return (url, anonKey, redirectUrl);
+>>>>>>> origin/codex/run-app-on-created-device-pqcgc5
     } catch (_) {
       return null;
     }
@@ -64,7 +91,8 @@ class AuthService {
 
     await _client!.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: AppConfig.authRedirectUrl,
+      redirectTo: _redirectUrl,
+      authScreenLaunchMode: LaunchMode.externalApplication,
     );
   }
 

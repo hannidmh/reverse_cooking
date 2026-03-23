@@ -217,6 +217,7 @@ def run_web():
     
     SUPABASE_URL = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+    SUPABASE_REDIRECT_URL = os.getenv("SUPABASE_REDIRECT_URL", "foodai://login-callback")
 
     if not SUPABASE_AVAILABLE:
         print("Supabase n'est pas installe, donc je lance l'app sans authentification.")
@@ -454,7 +455,7 @@ def run_web():
             "supabase_url": SUPABASE_URL,
             "supabase_anon_key": SUPABASE_KEY,
             "auth_enabled": bool(SUPABASE_URL and SUPABASE_KEY and supabase is not None),
-            "redirect_url": "foodai://login-callback",
+            "redirect_url": SUPABASE_REDIRECT_URL,
         }
 
     @app.post("/api/predict", response_model=FullPredictionResponse)

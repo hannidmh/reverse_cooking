@@ -32,7 +32,12 @@ flutter run \
   --dart-define=SUPABASE_REDIRECT_URL=foodai://login-callback
 ```
 
+<<<<<<< HEAD
 Le schéma de deep link Android/iOS est configuré sur `foodai://login-callback`.
+=======
+Tu peux aussi définir `SUPABASE_REDIRECT_URL` dans le `.env` backend pour que le mobile la récupère automatiquement via `/api/mobile/config`.
+Le schéma de deep link Android/iOS par défaut est `foodai://login-callback` et doit aussi être autorisé dans les Redirect URLs du dashboard Supabase.
+>>>>>>> origin/codex/run-app-on-created-device-pqcgc5
 
 ## Structure
 - `lib/main.dart`: bootstrap app + providers

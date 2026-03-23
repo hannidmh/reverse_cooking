@@ -26,11 +26,15 @@ class ApiService {
     return {'Authorization': 'Bearer $token'};
   }
 
-  Future<ScanResponse> scanImage(File image, {int servings = 2}) async {
+  Future<ScanResponse> scanImage(
+    File image, {
+    int servings = 2,
+    double minConfidence = 0.7,
+  }) async {
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(image.path),
       'servings': servings,
-      'min_confidence': 0.7,
+      'min_confidence': minConfidence,
     });
     final res = await _dio.post(
       '/api/scan',

@@ -1,9 +1,6 @@
 import 'dart:async';
 
-<<<<<<< HEAD
-=======
 import 'package:dio/dio.dart';
->>>>>>> origin/codex/run-app-on-created-device-vcn9pc
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/config.dart';
@@ -14,30 +11,19 @@ class AuthService {
   final SupabaseClient? _client;
 
   static Future<AuthService> create() async {
-<<<<<<< HEAD
-    if (!AppConfig.hasSupabaseConfig) {
-=======
     final config = await _loadConfig();
     if (config == null) {
->>>>>>> origin/codex/run-app-on-created-device-vcn9pc
       return AuthService._(null);
     }
 
     await Supabase.initialize(
-<<<<<<< HEAD
-      url: AppConfig.supabaseUrl,
-      anonKey: AppConfig.supabaseAnonKey,
-=======
       url: config.$1,
       anonKey: config.$2,
->>>>>>> origin/codex/run-app-on-created-device-vcn9pc
     );
 
     return AuthService._(Supabase.instance.client);
   }
 
-<<<<<<< HEAD
-=======
   static Future<(String, String)?> _loadConfig() async {
     if (AppConfig.hasSupabaseConfig) {
       return (AppConfig.supabaseUrl, AppConfig.supabaseAnonKey);
@@ -57,7 +43,6 @@ class AuthService {
     }
   }
 
->>>>>>> origin/codex/run-app-on-created-device-vcn9pc
   bool get isConfigured => _client != null;
 
   Session? get currentSession => _client?.auth.currentSession;

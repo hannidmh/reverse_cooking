@@ -2,15 +2,32 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
+import 'widgets/auth_required_view.dart';
 import 'widgets/foodai_card.dart';
 
 class FavoritesScreen extends StatelessWidget {
-  const FavoritesScreen({super.key, required this.api});
+  const FavoritesScreen({
+    super.key,
+    required this.api,
+    required this.auth,
+    required this.onSignInRequested,
+  });
 
   final ApiService api;
+  final AuthService auth;
+  final Future<void> Function() onSignInRequested;
 
   @override
   Widget build(BuildContext context) {
+    if (!auth.isLoggedIn) {
+      return AuthRequiredView(
+        title: 'Connexion requise',
+        message: 'Connecte-toi ou inscris-toi pour afficher tes favoris.',
+        onSignInRequested: onSignInRequested,
+      );
+    }
+
     return FutureBuilder<List<FavoriteItem>>(
       future: api.getFavorites(),
       builder: (context, snapshot) {
@@ -22,7 +39,9 @@ class FavoritesScreen extends StatelessWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const Center(child: Text('Aucun favori.'));
+          return const Center(
+            child: Text('Aucun favori pour le moment.'),
+          );
         }
         return ListView.builder(
           padding: const EdgeInsets.all(16),

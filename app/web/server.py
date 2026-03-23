@@ -678,6 +678,8 @@ def run_web():
                 )
                 for item in result.data
             ]
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -696,6 +698,8 @@ def run_web():
                 .eq('user_id', current_user["id"])\
                 .execute()
             return {"message": "Scan supprimé de l'historique"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -755,6 +759,8 @@ def run_web():
             }
             user_supabase.table('favorites').insert(payload).execute()
             return {"message": "Favori ajouté"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -774,6 +780,8 @@ def run_web():
                 .eq('user_id', current_user["id"])\
                 .execute()
             return {"message": "Favori supprimé"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 

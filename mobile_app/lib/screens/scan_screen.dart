@@ -1,16 +1,25 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/models.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import 'widgets/foodai_card.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({super.key, required this.api});
+  const ScanScreen({
+    super.key,
+    required this.api,
+    required this.auth,
+    required this.onSignInRequested,
+  });
 
   final ApiService api;
+  final AuthService auth;
+  final Future<void> Function() onSignInRequested;
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -21,6 +30,7 @@ class _ScanScreenState extends State<ScanScreen> {
   File? _image;
   ScanResponse? _result;
   bool _loading = false;
+  String? _errorMessage;
 
   Future<void> _pick(ImageSource source) async {
     final file = await _picker.pickImage(source: source, imageQuality: 85);
@@ -28,6 +38,7 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() {
       _image = File(file.path);
       _result = null;
+      _errorMessage = null;
     });
   }
 
@@ -36,7 +47,17 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() => _loading = true);
     try {
       final data = await widget.api.scanImage(_image!);
-      setState(() => _result = data);
+      setState(() {
+        _result = data;
+        _errorMessage = null;
+      });
+    } on DioException catch (error) {
+      final detail = error.response?.data is Map<String, dynamic>
+          ? (error.response?.data['detail'] as String?)
+          : null;
+      setState(() {
+        _errorMessage = detail ?? 'Impossible de contacter le serveur d’analyse.';
+      });
     } finally {
       setState(() => _loading = false);
     }
@@ -49,6 +70,24 @@ class _ScanScreenState extends State<ScanScreen> {
       children: [
         const Text('FoodAI Lab', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
+        if (!widget.auth.isLoggedIn)
+          FoodAiCard(
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Connecte-toi avec Google pour enregistrer ton historique, tes favoris et ton profil.',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(
+                  onPressed: widget.onSignInRequested,
+                  child: const Text('Se connecter'),
+                ),
+              ],
+            ),
+          ),
+        if (!widget.auth.isLoggedIn) const SizedBox(height: 12),
         FoodAiCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,6 +128,16 @@ class _ScanScreenState extends State<ScanScreen> {
             ],
           ),
         ),
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: FoodAiCard(
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.orangeAccent),
+              ),
+            ),
+          ),
         if (_result != null)
           FoodAiCard(
             child: Column(

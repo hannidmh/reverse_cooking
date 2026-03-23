@@ -66,7 +66,11 @@ class _MainTabsState extends ConsumerState<MainTabs> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
+<<<<<<< HEAD
             'Connexion Google indisponible. Ajoute SUPABASE_URL et SUPABASE_ANON_KEY au lancement Flutter.',
+=======
+            'Connexion Google indisponible. Vérifie les variables Supabase dans le backend ou les --dart-define Flutter.',
+>>>>>>> origin/codex/run-app-on-created-device-vcn9pc
           ),
         ),
       );

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -29,6 +30,7 @@ class _ScanScreenState extends State<ScanScreen> {
   File? _image;
   ScanResponse? _result;
   bool _loading = false;
+  String? _errorMessage;
 
   Future<void> _pick(ImageSource source) async {
     final file = await _picker.pickImage(source: source, imageQuality: 85);
@@ -36,6 +38,7 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() {
       _image = File(file.path);
       _result = null;
+      _errorMessage = null;
     });
   }
 
@@ -44,7 +47,17 @@ class _ScanScreenState extends State<ScanScreen> {
     setState(() => _loading = true);
     try {
       final data = await widget.api.scanImage(_image!);
-      setState(() => _result = data);
+      setState(() {
+        _result = data;
+        _errorMessage = null;
+      });
+    } on DioException catch (error) {
+      final detail = error.response?.data is Map<String, dynamic>
+          ? (error.response?.data['detail'] as String?)
+          : null;
+      setState(() {
+        _errorMessage = detail ?? 'Impossible de contacter le serveur d’analyse.';
+      });
     } finally {
       setState(() => _loading = false);
     }
@@ -115,6 +128,16 @@ class _ScanScreenState extends State<ScanScreen> {
             ],
           ),
         ),
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: FoodAiCard(
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.orangeAccent),
+              ),
+            ),
+          ),
         if (_result != null)
           FoodAiCard(
             child: Column(

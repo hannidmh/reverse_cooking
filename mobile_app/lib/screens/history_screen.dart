@@ -2,15 +2,32 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
+import 'widgets/auth_required_view.dart';
 import 'widgets/foodai_card.dart';
 
 class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key, required this.api});
+  const HistoryScreen({
+    super.key,
+    required this.api,
+    required this.auth,
+    required this.onSignInRequested,
+  });
 
   final ApiService api;
+  final AuthService auth;
+  final Future<void> Function() onSignInRequested;
 
   @override
   Widget build(BuildContext context) {
+    if (!auth.isLoggedIn) {
+      return AuthRequiredView(
+        title: 'Connexion requise',
+        message: 'Connecte-toi ou inscris-toi pour afficher ton historique de scans.',
+        onSignInRequested: onSignInRequested,
+      );
+    }
+
     return FutureBuilder<List<HistoryItem>>(
       future: api.getHistory(),
       builder: (context, snapshot) {
@@ -22,7 +39,9 @@ class HistoryScreen extends StatelessWidget {
         }
         final items = snapshot.data ?? [];
         if (items.isEmpty) {
-          return const Center(child: Text('Aucun scan enregistré.'));
+          return const Center(
+            child: Text('Aucun scan enregistré pour le moment.'),
+          );
         }
         return ListView.builder(
           padding: const EdgeInsets.all(16),

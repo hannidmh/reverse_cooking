@@ -22,12 +22,25 @@ Par défaut l'app appelle `http://10.0.2.2:8000` (Android emulator).
 
 Tu peux changer l'URL dans `lib/core/config.dart`.
 
+## Configuration Google / Supabase (mobile)
+La connexion Google mobile lit sa configuration via `--dart-define` :
+
+```bash
+flutter run \
+  --dart-define=SUPABASE_URL=... \
+  --dart-define=SUPABASE_ANON_KEY=... \
+  --dart-define=SUPABASE_REDIRECT_URL=foodai://login-callback
+```
+
+Le schéma de deep link Android/iOS est configuré sur `foodai://login-callback`.
+
 ## Structure
 - `lib/main.dart`: bootstrap app + providers
 - `lib/theme/app_theme.dart`: thème visuel inspiré du site web
 - `lib/services/api_service.dart`: appels HTTP vers FastAPI
+- `lib/services/auth_service.dart`: connexion Google/Supabase
 - `lib/screens/`: écrans Scan / History / Favorites / Profile
 
 ## Notes
-- Auth Google/Supabase mobile n'est pas encore câblée dans ce MVP, mais le stockage sécurisé du token est prêt (`flutter_secure_storage`).
+- Auth Google/Supabase mobile est câblée, mais il faut fournir les `dart-define` Supabase au lancement.
 - Le flow de scan (camera + galerie) est implémenté avec `image_picker`.

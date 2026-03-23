@@ -5,12 +5,20 @@ import 'package:image_picker/image_picker.dart';
 
 import '../models/models.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import 'widgets/foodai_card.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({super.key, required this.api});
+  const ScanScreen({
+    super.key,
+    required this.api,
+    required this.auth,
+    required this.onSignInRequested,
+  });
 
   final ApiService api;
+  final AuthService auth;
+  final Future<void> Function() onSignInRequested;
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -49,6 +57,24 @@ class _ScanScreenState extends State<ScanScreen> {
       children: [
         const Text('FoodAI Lab', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
+        if (!widget.auth.isLoggedIn)
+          FoodAiCard(
+            child: Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Connecte-toi avec Google pour enregistrer ton historique, tes favoris et ton profil.',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(
+                  onPressed: widget.onSignInRequested,
+                  child: const Text('Se connecter'),
+                ),
+              ],
+            ),
+          ),
+        if (!widget.auth.isLoggedIn) const SizedBox(height: 12),
         FoodAiCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

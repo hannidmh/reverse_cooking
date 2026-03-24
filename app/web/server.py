@@ -217,7 +217,11 @@ def run_web():
     
     SUPABASE_URL = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+<<<<<<< HEAD
     SUPABASE_REDIRECT_URL = os.getenv("SUPABASE_REDIRECT_URL", "foodai://login-callback/")
+=======
+    SUPABASE_REDIRECT_URL = os.getenv("SUPABASE_REDIRECT_URL", "foodai://login-callback")
+>>>>>>> d8ccb5ae172c56b7b40cd01ad27c64726a51efd2
 
     if not SUPABASE_AVAILABLE:
         print("Supabase n'est pas installe, donc je lance l'app sans authentification.")

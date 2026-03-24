@@ -74,7 +74,7 @@ def run_pyqt():
 
             # Core
             self.db = RecipeDB.load()
-            self.predictor = FoodPredictor(model_path="models/model_food.pth")
+            self.predictor = FoodPredictor(model_path=str(PROJECT_ROOT / "models" / "model_food.pth"))
 
             self.current_image_path: str | None = None
             self.current_topk = None  # type: ignore
@@ -217,6 +217,7 @@ def run_web():
     
     SUPABASE_URL = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "")
+    SUPABASE_REDIRECT_URL = os.getenv("SUPABASE_REDIRECT_URL", "foodai://login-callback/")
 
     if not SUPABASE_AVAILABLE:
         print("Supabase n'est pas installe, donc je lance l'app sans authentification.")
@@ -277,7 +278,7 @@ def run_web():
             try:
                 print("Je charge le modele IA a la demande...")
                 from app.ml.predictor import FoodPredictor
-                predictor = FoodPredictor(model_path="models/model_food.pth")
+                predictor = FoodPredictor(model_path=str(PROJECT_ROOT / "models" / "model_food.pth"))
                 print("Modele IA charge.")
                 return predictor
             except Exception as e:
@@ -445,6 +446,16 @@ def run_web():
             "db_loaded": db is not None,
             "num_dishes": len(db.dishes) if db else 0,
             "auth_enabled": supabase is not None
+        }
+
+    @app.get("/api/mobile/config")
+    async def mobile_config():
+        """Expose la configuration publique nécessaire au client mobile."""
+        return {
+            "supabase_url": SUPABASE_URL,
+            "supabase_anon_key": SUPABASE_KEY,
+            "auth_enabled": bool(SUPABASE_URL and SUPABASE_KEY and supabase is not None),
+            "redirect_url": SUPABASE_REDIRECT_URL,
         }
 
     @app.post("/api/predict", response_model=FullPredictionResponse)
@@ -678,6 +689,8 @@ def run_web():
                 )
                 for item in result.data
             ]
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -696,6 +709,8 @@ def run_web():
                 .eq('user_id', current_user["id"])\
                 .execute()
             return {"message": "Scan supprimé de l'historique"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -755,6 +770,8 @@ def run_web():
             }
             user_supabase.table('favorites').insert(payload).execute()
             return {"message": "Favori ajouté"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
@@ -774,6 +791,8 @@ def run_web():
                 .eq('user_id', current_user["id"])\
                 .execute()
             return {"message": "Favori supprimé"}
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 

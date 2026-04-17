@@ -27,7 +27,11 @@ class AuthService {
 
   static Future<(String, String, String)?> _loadConfig() async {
     if (AppConfig.hasSupabaseConfig) {
-      return (AppConfig.supabaseUrl, AppConfig.supabaseAnonKey, AppConfig.authRedirectUrl);
+      return (
+        AppConfig.supabaseUrl,
+        AppConfig.supabaseAnonKey,
+        AppConfig.authRedirectUrl
+      );
     }
 
     try {
@@ -36,7 +40,8 @@ class AuthService {
       final data = res.data as Map<String, dynamic>;
       final url = (data['supabase_url'] as String?) ?? '';
       final anonKey = (data['supabase_anon_key'] as String?) ?? '';
-      final redirectUrl = (data['redirect_url'] as String?) ?? AppConfig.authRedirectUrl;
+      final redirectUrl =
+          (data['redirect_url'] as String?) ?? AppConfig.authRedirectUrl;
       final authEnabled = data['auth_enabled'] == true;
       if (!authEnabled || url.isEmpty || anonKey.isEmpty) return null;
       return (url, anonKey, redirectUrl);
@@ -54,17 +59,18 @@ class AuthService {
   Stream<Session?> sessionChanges() async* {
     yield currentSession;
     if (_client == null) return;
-    yield* _client!.auth.onAuthStateChange.map((event) => event.session);
+    yield* _client.auth.onAuthStateChange.map((event) => event.session);
   }
 
   Future<String?> getAccessToken() async => currentSession?.accessToken;
 
   Future<void> signInWithGoogle() async {
     if (_client == null) {
-      throw StateError('Connexion Google indisponible: Supabase n’est pas configuré.');
+      throw StateError(
+          'Connexion Google indisponible: Supabase n’est pas configuré.');
     }
 
-    await _client!.auth.signInWithOAuth(
+    await _client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: _redirectUrl,
       authScreenLaunchMode: LaunchMode.externalApplication,
@@ -73,6 +79,6 @@ class AuthService {
 
   Future<void> signOut() async {
     if (_client == null) return;
-    await _client!.auth.signOut();
+    await _client.auth.signOut();
   }
 }

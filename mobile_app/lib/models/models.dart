@@ -10,11 +10,36 @@ class Prediction {
       );
 }
 
+class RecipeIngredient {
+  final String name;
+  final String display;
+  final double? qty;
+  final String unit;
+  final String formatted;
+
+  RecipeIngredient({
+    required this.name,
+    required this.display,
+    required this.qty,
+    required this.unit,
+    required this.formatted,
+  });
+
+  factory RecipeIngredient.fromJson(Map<String, dynamic> json) =>
+      RecipeIngredient(
+        name: (json['name'] ?? '').toString(),
+        display: (json['display'] ?? '').toString(),
+        qty: json['qty'] == null ? null : (json['qty'] as num).toDouble(),
+        unit: (json['unit'] ?? '').toString(),
+        formatted: (json['formatted'] ?? '').toString(),
+      );
+}
+
 class Recipe {
   final String name;
   final int servings;
-  final List<dynamic> ingredients;
-  final List<dynamic> steps;
+  final List<RecipeIngredient> ingredients;
+  final List<String> steps;
 
   Recipe({
     required this.name,
@@ -26,8 +51,12 @@ class Recipe {
   factory Recipe.fromJson(Map<String, dynamic> json) => Recipe(
         name: json['name'] as String,
         servings: json['servings'] as int,
-        ingredients: (json['ingredients'] as List?) ?? const [],
-        steps: (json['steps'] as List?) ?? const [],
+        ingredients: ((json['ingredients'] as List?) ?? const [])
+            .map((e) => RecipeIngredient.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        steps: ((json['steps'] as List?) ?? const [])
+            .map((e) => e.toString())
+            .toList(),
       );
 }
 

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_theme.dart';
+import 'foodai_card.dart';
+
 class AuthRequiredView extends StatelessWidget {
   const AuthRequiredView({
     super.key,
@@ -14,32 +17,51 @@ class AuthRequiredView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.lock_outline, size: 40),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Center(
+        child: FoodAiCard(
+          highlightColor: AppTheme.accentSecondary,
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.accentSecondary.withValues(alpha: 0.9),
+                      AppTheme.accentYellow.withValues(alpha: 0.9),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(message, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: onSignInRequested,
-                  icon: const Icon(Icons.login),
-                  label: const Text('Se connecter / S’inscrire'),
-                ),
-              ],
-            ),
+                child: const Icon(Icons.lock_open_rounded,
+                    size: 34, color: AppTheme.bgMain),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Text(message, textAlign: TextAlign.center),
+              const SizedBox(height: 22),
+              FilledButton.icon(
+                onPressed: onSignInRequested,
+                icon: const Icon(Icons.login),
+                label: const Text('Continuer avec Google'),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Historique, favoris et profil restent synchronisés une fois connecté.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.textSecondary),
+              ),
+            ],
           ),
         ),
       ),
